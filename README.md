@@ -20,6 +20,11 @@ A streamlined guide for setting up a production-ready Generative AI operations e
 * **uv**: [Installation](https://docs.astral.sh/uv/getting-started/installation/)
 * **Git**: [Download](https://git-scm.com/install/)
 
+### Recommended VS Code Plugins
+* **Postman**: Testing API endpoints.
+* **Ruff**: Extremely fast Python linting and formatting.
+* **GitHub Copilot**: AI-powered code completion.
+
 ---
 
 ## 🛠️ Installation & Setup
@@ -37,10 +42,26 @@ We include `ipykernel` as a dev dependency so your notebooks work immediately.
 
 ```bash
 uv init project_name
-uv add openai groq
 uv add --dev ipykernel
+uv add groq
 uv sync
 
+# Install specific versions
+uv python install 3.10
+uv python install 3.12.1
+
+uv python list
+
+# A. For a Specific Project (The .python-version file)
+If you are inside a project folder, you can "pin" a version. This creates a .python-version file, and uv will respect this version whenever you are in this directory.
+
+# B. For a Single Command
+uv run --python 3.10 my_script.py
+uv run --python 3.12 my_script.py
+
+# C. create venv
+uv venv
+uv venv --python 3.13.11
 ```
 
 3. **Configure Environment Variables**
@@ -60,9 +81,10 @@ GROQ_API_KEY=your_groq_key
 Run these commands to set up the standard layout:
 
 ```bash
-mkdir -p src/my_app notebooks tests docs
-touch notebooks/01_initial.ipynb README.md
-touch src/my_app/__init__.py src/my_app/main.py
+mkdir -p src/my_app notebooks tests docs ;
+touch notebooks/01_initial.ipynb README.md ;
+touch src/my_app/__init__.py src/my_app/main.py;
+touch .gitignore .env
 
 ```
 
@@ -79,12 +101,16 @@ my-project/
 ├── tests/               # Automated test suite
 ├── pyproject.toml       # Project metadata & dependencies
 └── uv.lock              # Deterministic lockfile
+└── .gitignore            
+└── .env            
 ```
 
 > **💡 Pro‑Tip: Making your code importable**
 > To ensure `uv` correctly recognizes your code within the `src` layout and treats `my_app` as an installable package, add the following to `pyproject.toml`:
 >
 > ```toml
+> [project.scripts]
+> my-app = "my_app.main:main"
 > [build-system]
 > requires = ["hatchling"]
 > build-backend = "hatchling.build"
@@ -92,6 +118,19 @@ my-project/
 > [tool.hatch.build.targets.wheel]
 > packages = ["src/my_app"]
 > ```
+
+`my-app = "my_app.main:main"` means:
+
+- `my-app` = CLI command name you run (`uv run my-app`)
+- `my_app` = Python package/module path (folder under `src/` with `__init__.py`)
+- `.main` = `main.py`
+- `:main` = `def main(...)` function inside `main.py`
+
+it resolves to: `src/my_app/main.py` -> function `main()`.
+
+```bash
+uv run my-app
+```
 
 ## 🔧 Troubleshooting & Cloud Drive Setup
 
