@@ -8,7 +8,6 @@ test.md
 .env
 .env.*
 !.env.example
-01_day1
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
