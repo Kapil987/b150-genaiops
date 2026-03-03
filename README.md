@@ -37,13 +37,18 @@ cd <repo-name>
 
 ```
 
+1.1 **Git sync**
+```bash
+git pull
+```
+
 2. **Initialize & Sync Environment**
 We include `ipykernel` as a dev dependency so your notebooks work immediately.
 
 ```bash
 uv init project_name
 uv add --dev ipykernel
-uv add groq
+uv add groq openai python-dotenv
 uv sync
 
 # Install specific versions
