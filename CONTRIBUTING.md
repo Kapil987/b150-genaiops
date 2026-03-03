@@ -22,7 +22,7 @@
 | --- | --- | --- |
 | **`feat`** | A new feature | `feat(api): add jwt rotation logic` |
 | **`fix`** | A bug fix | `fix(ui): prevent double-click on submit button` |
-| **`docs`** | Documentation only | `docs: add architectural diagram to readme` |
+| **`docs`** | Documentation only | `docs: updated readme and other related resouces` |
 | **`style`** | Code style (semi-colons, spacing) | `style: run prettier on auth controller` |
 | **`refactor`** | Neither fix nor feature | `refactor: extract validation to middleware` |
 | **`perf`** | Performance improvements | `perf: cache expensive database lookups` |

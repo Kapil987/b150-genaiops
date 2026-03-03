@@ -3,6 +3,12 @@ day2-Notes.*
 99_infographics
 .env
 test.md
+# Ignore all .env files in any directory
+**/.env
+.env
+.env.*
+!.env.example
+01_day1
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
