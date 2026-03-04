@@ -10,6 +10,9 @@ A streamlined guide for setting up a production-ready Generative AI operations e
 ### Accounts & Access
 
 * **AWS Account**: [Sign up here](https://signin.aws.amazon.com/signup?request_type=register)
+  - [ ] Search for Service Quotas > AWS services > Amazon Elastic Compute Cloud (Amazon EC2) > Running On-Demand G and VT instances > Requested quota increase > to 8
+
+
 * **Groq Cloud**: [Get API Keys](https://console.groq.com/docs/overview)
 * **GitHub**: [Create Account](https://github.com/signup)
 
@@ -176,5 +179,6 @@ uv run python -m ipykernel install --user --name=venv --display-name "Python (my
 ```
 
 ---
+
 
 
