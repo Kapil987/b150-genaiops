@@ -175,6 +175,7 @@ If VS Code can't find the environment for Jupyter Notebooks:
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
 .\.venv\Scripts\activate.ps1
 uv run python -m ipykernel install --user --name=venv --display-name "Python (myenv)"
+uv run --active python -m ipykernel install --user --name=venv --display-name "Python (myenv)"
 
 ```
 
