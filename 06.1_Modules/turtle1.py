@@ -2,7 +2,7 @@ from turtle import *
 import colorsys
 
 # Set the speed of drawing and background color
-speed(10)
+speed(20)
 # bgcolor("white")
 bgcolor("black")
 
