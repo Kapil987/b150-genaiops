@@ -1,7 +1,7 @@
 Date,Category,Value,Product,Sales,Region
 2023-01-01,A,28.0,Product1,754.0,East
-2023-01-02,B,39.0,Product3,110.0,North
-2023-01-03,C,32.0,Product2,398.0,East
+2023-01-02,B,,Product3,110.0,North
+2023-01-03,C,,Product2,398.0,East
 2023-01-04,B,8.0,Product1,522.0,East
 2023-01-05,B,26.0,Product3,869.0,North
 2023-01-06,B,54.0,Product3,192.0,West

@@ -178,6 +178,25 @@ uv run python -m ipykernel install --user --name=venv --display-name "Python (my
 uv run --active python -m ipykernel install --user --name=venv --display-name "Python (myenv)"
 
 ```
+### 3.  OneDrive hardlink compatibility issue.
+OneDrive doesn't support hardlinks, which uv tries to use by default for efficiency. This causes the installation to fail.
+
+error: Failed to install: colorama-0.4.6-py2.py3-none-any.whl (colorama==0.4.6)
+  Caused by: failed to hardlink file from C:\Users\YOURUSERNAME\OneDrive - YOURCOMPANY\p\3. mlops\test-git\.venv\Lib\site-packages\colorama-0.4.6.dist-info\WHEEL to C:\Users\YOURUSERNAME\AppData\Local\uv\cache\archive-v0\OeWr1gFY2tR-mx6oCMhF_\colorama-0.4.6.dist-info\WHEEL: The cloud operation cannot be performed on a file with incompatible hardlinks. (os error 396)
+```bash
+set UV_NO_HARDLINKS=1
+export UV_NO_HARDLINKS=1 ## for git bash
+set UV_CACHE_DIR=C:\.uv-cache
+```
+#### Other options
+Windows:
+
+Press Win + X → "System"
+Click "Advanced system settings"
+Click "Environment Variables"
+Under "User variables", click "New"
+Variable name: UV_NO_HARDLINKS
+Variable value: 1
+Click OK and restart your terminal
 
 ---
-`
