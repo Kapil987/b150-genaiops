@@ -153,3 +153,36 @@ Open the page in a browser, then inspect:
 - Network tab
 - Response
 - Headers
+
+### Flask dir structure
+my_flask_app/
+├── app/                    # Main application package
+│   ├── __init__.py        # Makes 'app' a package and initializes Flask
+│   ├── routes.py          # URL declarations (your @app.route stuff)
+│   ├── models.py          # Database structures
+│   ├── static/            # CSS, JavaScript, and Images
+│   │   ├── css/
+│   │   │   └── style.css
+│   │   └── js/
+│   │       └── script.js
+│   └── templates/         # HTML files
+│       ├── base.html
+│       └── index.html
+├── venv/                  # Python Virtual Environment
+├── .gitignore             # Files to exclude from Git (like venv/)
+├── config.py              # Secret keys and database URLs
+├── main.py                # The entry point to start the app
+└── requirements.txt       # List of dependencies (Flask, etc.)
+
+---
+
+### Comparison GET and POST request
+
+| Feature | GET (The Postcard) | POST (The Sealed Package) |
+| :--- | :--- | :--- |
+| **Visibility** | Everything is in the URL. | Hidden inside the request body. |
+| **Primary Goal** | **Get**ting information. | **Send**ing/Changing information. |
+| **Security** | Low (Don't use for passwords!). | Higher (Better for sensitive data). |
+| **History** | Can be bookmarked in a browser. | Cannot be bookmarked. |
+
+**Pro-Tip for Students:** If you see a `?` in your browser's address bar followed by words (like `?user=john&id=123`), you are looking at a **GET** request in action!
