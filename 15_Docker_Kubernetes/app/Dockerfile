@@ -10,6 +10,7 @@ WORKDIR /app
 # Copy only the dependency files first to leverage Docker layer caching
 # This ensures 'uv sync' only runs if requirements change
 # COPY pyproject.toml uv.lock ./ 
+COPY requirements.txt .
 
 # Install dependencies into the system site-packages
 # --system: Installs packages globally (safe inside a container)

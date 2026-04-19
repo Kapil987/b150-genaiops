@@ -9,16 +9,18 @@ WORKDIR /app
 
 # Copy only the dependency files first to leverage Docker layer caching
 # This ensures 'uv sync' only runs if requirements change
-COPY pyproject.toml uv.lock ./ 
+# COPY pyproject.toml uv.lock ./ 
+COPY requirements.txt .
 
 # Install dependencies into the system site-packages
 # --system: Installs packages globally (safe inside a container)
 # --frozen: Ensures uv.lock is respected and not updated
 # --no-cache: Keeps the image size small by not storing cache files
-RUN uv pip install --system --frozen -r pyproject.toml
+# RUN uv pip install --system --frozen -r pyproject.toml
+RUN uv pip install --system --no-cache -r requirements.txt
 
 # 👉 Install Gunicorn (Production WSGI server)
-RUN uv pip install --system gunicorn
+# RUN uv pip install --system gunicorn
 
 # Copy the rest of your application code
 COPY . .

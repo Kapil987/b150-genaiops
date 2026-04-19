@@ -22,19 +22,3 @@ spec:
         ports:
         - containerPort: 5000
         imagePullPolicy: IfNotPresent # Useful for local clusters like kind
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: flask-service
-spec:
-  selector:
-    app: flask-web
-  ports:
-    - protocol: TCP
-      port: 80          # The port the Service listens on
-      targetPort: 5000  # The port your Flask app is actually running on
-      nodePort: 30007
-  type: NodePort        # Allows access from outside the cluster

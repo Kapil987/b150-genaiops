@@ -31,8 +31,9 @@ exit bash, then re-enter
 ## Install kind
 https://kind.sigs.k8s.io/docs/user/quick-start/#installation
 
-sudo mv kind /usr/local/bin
+# sudo mv kind /usr/local/bin
 # sudo chmod +x /usr/local/bin/kind
+
 ## Install kubectl
 https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
 curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
@@ -40,15 +41,26 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 ## Docker commands
 docker build -t dockerHubRepoName/ImageName:tagName pathToDockerFile
 docker build -t myapp .
+docker build -t myimage:latest -f MyDockerfile .
 docker images
-kubectl apply -f deployment.yaml
+docker run --rm --name contaienrName -p 80:5000 ImageName:TagName # --rm to create temporary container
 docker ps -a
+docker inspect
+docker network ls
+docker volume ls
+docker system prune
 
 ## kind commands
 kind create cluster --config kind-config.yml
 kind load docker-image myapp:latest --name demo1
 kind get clusters
 kind delete clusters clusterName
+
+## Kubectl commands
+kubectl apply -f deployment.yaml
+kubectl get svc
+kubectl describe po PODName -n namespace
+kubectl port-forward svc/flask-service 8080:80
 
 ## AWS
 make sure to open NodePort in security group of you ec2
