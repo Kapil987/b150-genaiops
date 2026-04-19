@@ -10,7 +10,8 @@ WORKDIR /app
 # Copy only the dependency files first to leverage Docker layer caching
 # This ensures 'uv sync' only runs if requirements change
 # COPY pyproject.toml uv.lock ./ 
-COPY requirements.txt .
+COPY . .
+# COPY requirements.txt .
 
 # Install dependencies into the system site-packages
 # --system: Installs packages globally (safe inside a container)
@@ -18,9 +19,6 @@ COPY requirements.txt .
 # --no-cache: Keeps the image size small by not storing cache files
 # RUN uv pip install --system --frozen -r pyproject.toml
 RUN uv pip install --system --no-cache -r requirements.txt
-
-# Copy the rest of your application code
-COPY . .
 
 # Expose the port Flask usually runs on
 EXPOSE 5000
