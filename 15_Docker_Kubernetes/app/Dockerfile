@@ -1,0 +1,33 @@
+# Use a lightweight Python base image
+FROM python:3.11-slim
+
+# Install uv directly from the official binary distribution
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy only the dependency files first to leverage Docker layer caching
+# This ensures 'uv sync' only runs if requirements change
+# COPY pyproject.toml uv.lock ./ 
+
+# Install dependencies into the system site-packages
+# --system: Installs packages globally (safe inside a container)
+# --frozen: Ensures uv.lock is respected and not updated
+# --no-cache: Keeps the image size small by not storing cache files
+# RUN uv pip install --system --frozen -r pyproject.toml
+RUN uv pip install --system --no-cache -r requirements.txt
+
+# Copy the rest of your application code
+COPY . .
+
+# Expose the port Flask usually runs on
+EXPOSE 5000
+
+# Set environment variables for Flask
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# Run the application
+# We use 'python -m flask' to ensure we use the system-installed flask
+CMD ["python", "-m", "flask", "run", "--port=5000"]

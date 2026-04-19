@@ -1,0 +1,42 @@
+text,label
+hi,greeting
+hello,greeting
+hey there,greeting
+good morning,greeting
+yo,greeting
+hi ya,greeting
+greetings,greeting
+hey,greeting
+how to reset password,question
+forgot my password,question
+can't log in,question
+change my login details,question
+password recovery help,question
+how do i sign in,question
+need help with my login,question
+resetting credentials,question
+cancel my subscription,complaint
+stop billing me,complaint
+i want a refund,complaint
+close my account,complaint
+terminate membership,complaint
+this is too expensive,complaint
+i want to leave,complaint
+cancel my plan,complaint
+great service,praise
+awesome job,praise
+i love this app,praise
+very helpful,praise
+excellent support,praise
+you guys are the best,praise
+amazing experience,praise
+thanks for the help,praise
+is there a village nearby,out_of_scope
+moat in the boat,out_of_scope
+what is the weather,out_of_scope
+tell me a joke,out_of_scope
+who is the president,out_of_scope
+i like pizza,out_of_scope
+random text here,out_of_scope
+blue bananas,out_of_scope
+how far is the moon,out_of_scope
