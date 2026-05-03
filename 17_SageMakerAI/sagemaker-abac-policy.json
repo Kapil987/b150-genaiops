@@ -1,0 +1,31 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AllowConsoleListAndDescribe",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:ListDomains",
+        "sagemaker:ListUserProfiles",
+        "sagemaker:ListApps",
+        "sagemaker:DescribeDomain",
+        "sagemaker:DescribeUserProfile",
+        "sagemaker:ListTags"
+      ],
+      "Resource": "*"
+    },
+    {
+      "Sid": "AllowPresignedUrlWhenTagMatches",
+      "Effect": "Allow",
+      "Action": [
+        "sagemaker:CreatePresignedDomainUrl"
+      ],
+      "Resource": "*",
+      "Condition": {
+        "StringEquals": {
+          "sagemaker:ResourceTag/studiouserid": "${aws:PrincipalTag/studiouserid}"
+        }
+      }
+    }
+  ]
+}
