@@ -40,10 +40,15 @@ curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stabl
 
 ## Docker commands
 docker build -t dockerHubRepoName/ImageName:tagName pathToDockerFile
+docker build -t kapil0123/myapp .
+
 docker build -t myapp .
 docker build -t myimage:latest -f MyDockerfile .
 docker images
 docker run --rm --name contaienrName -p 80:5000 ImageName:TagName # --rm to create temporary container
+docker run --rm --name test -p 80:5000 kapil0123/myapp
+
+
 docker ps -a
 docker inspect
 docker network ls
@@ -52,7 +57,7 @@ docker system prune
 
 ## kind commands
 kind create cluster --config kind-config.yml
-kind load docker-image myapp:latest --name demo1
+kind load docker-image kapilmyapp:latest --name demo1
 kind get clusters
 kind delete clusters clusterName
 
@@ -60,7 +65,7 @@ kind delete clusters clusterName
 kubectl apply -f deployment.yaml
 kubectl get svc
 kubectl describe po PODName -n namespace
-kubectl port-forward svc/flask-service 8080:80
+kubectl port-forward svc/flask-service 8080:80 --address 0.0.0.0 
 
 ## AWS
 make sure to open NodePort in security group of you ec2

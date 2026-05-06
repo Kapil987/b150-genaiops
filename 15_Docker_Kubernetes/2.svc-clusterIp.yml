@@ -7,6 +7,6 @@ spec:
     app: flask-web
   ports:
     - protocol: TCP
-      port: 80
-      targetPort: 5000
+      port: 80 # wrt host
+      targetPort: 5000 # wrt to container
   type: ClusterIP   # 👈

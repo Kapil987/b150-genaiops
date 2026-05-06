@@ -18,7 +18,7 @@ spec:
       - name: flask-container
         # Replace 'your-docker-username' with your actual Docker Hub username
         # or the name you used when building: flask-uv-app:latest
-        image: myapp
+        image: kapil0123/myapp:latest
         ports:
         - containerPort: 5000
         imagePullPolicy: IfNotPresent # Useful for local clusters like kind
