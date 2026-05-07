@@ -1,3 +1,39 @@
+## 🛠️ Installation & Setup
+
+1. **Clone the Repository**
+
+```bash
+git clone <repo-url>
+cd <repo-name>
+
+```
+
+1.1 **Git sync**
+```bash
+git pull
+```
+
+2. **Initialize & Sync Environment**
+We include `ipykernel` as a dev dependency so your notebooks work immediately.
+
+```bash
+uv init project_name
+uv add --dev ipykernel
+uv add groq openai python-dotenv
+uv sync
+```
+
+### 2. VS Code Kernel Not Found (Windows)
+
+If VS Code can't find the environment for Jupyter Notebooks:
+
+```bash
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope Process
+.\.venv\Scripts\activate.ps1
+uv run python -m ipykernel install --user --name=venv --display-name "Python (myenv)"
+uv run --active python -m ipykernel install --user --name=venv --display-name "Python (myenv)"
+```
+
 #### Same code, just change the provider
 ```python
 from litellm import completion
