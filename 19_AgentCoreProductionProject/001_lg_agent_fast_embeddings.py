@@ -127,8 +127,9 @@ if __name__ == "__main__":
 
     result = agent.invoke({
         "messages": [
-            ("human", "Explain roaming activation.")
+            ("human", "What is the daily withdrawal limit for the Gold Debit Card?")
         ]
     })
-    print(result['messages'][-1].content)
+    # print(result['messages'][-1].content)
+    print(result['messages'])
     # print(result['messages'][1].additional_kwargs['tool_calls'][0]['function']['name'])
