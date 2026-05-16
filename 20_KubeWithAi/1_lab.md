@@ -82,4 +82,3 @@ kind delete cluster --name clusterNAME
 - can you fix my nginx pod and then show me kubectl get po status
 - can you push a temporary file in bucket MYBUCKETNAME to check connectivity
 - show me the status for all of my instances in us-east-1 region in table properly formated for linux terminal
-- install tree package in linux `sudo apt remove tree -y`
