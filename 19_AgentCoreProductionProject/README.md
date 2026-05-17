@@ -221,7 +221,7 @@ For the memory lab, point the UI Agent Key to the deployed agent configured from
 - [Amazon Bedrock AgentCore](https://aws.amazon.com/bedrock/agentcore/)
 - [Amazon Bedrock AgentCore Documentation](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/agentcore-get-started-toolkit.html/)
 - [Amazon Bedrock AgentCore Samples](https://github.com/awslabs/amazon-bedrock-agentcore-samples)
-
+- [Adding memory to an existing agent](https://docs.aws.amazon.com/bedrock-agentcore/latest/devguide/memory-get-started.html#memory-add-to-existing-agent)
 ## Cleanup: Delete Agents and Lab Resources
 
 Run cleanup after the lab to avoid keeping unused AWS resources.

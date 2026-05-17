@@ -159,7 +159,7 @@ Once configured, Amazon Q can directly help manage AWS resources.
 Amazon Q CLI is gradually transitioning internally toward Kiro branding, but the `q` command continues to work normally.
 
 ---
-
+alias k='kubectl'
 # Official Documentation
 
 * [Amazon Q CLI Documentation](https://docs.aws.amazon.com/amazonq/latest/qdeveloper-ug/command-line.html)

@@ -10,6 +10,8 @@ https://mcpservers.org/
 - aws cli and aws configure cli with access and secret keys
 - create a kind cluster on ec2
 - install radar curl -fsSL https://get.radarhq.io | sh && kubectl radar
+- kubectl radar --host 0.0.0.0
+- for port forwarding use ssh -L 9280:localhost:9280 ubuntu@<EC2-PUBLIC-IP>
   
 ## Step 1 — Locate Amazon Q Config Directory
 

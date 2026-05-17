@@ -1,0 +1,599 @@
+codex_project_rebuild_prompt:
+  title: "Agentic HR Workflow Prompt"
+  target_project_path: "C:\\Users\\Administrator\\4.AgenticHRWorkflow"
+
+  role:
+    description: >
+      You are Codex. build the complete Agentic HR Workflow project so it works
+      with `docker compose up --build`. The final project must match the existing
+      behavior, UI hierarchy, API structure, provider integrations, sample PDF usage,
+      and Docker layout.
+
+  part_1_project_goal:
+    summary: >
+      Build a Dockerized HR automation proof of concept with a FastAPI backend and
+      Streamlit frontend. The app has two main stages:
+      1. PDF to JSON extraction using AWS Bedrock.
+      2. Agentic candidate workflow using Groq, tool calling, Zoom, Brevo email,
+         one-shot automation, and human-in-the-loop review.
+
+    required_runtime_command: "docker compose up --build"
+
+    expected_urls:
+      ui: "http://localhost:8501"
+      api_docs: "http://localhost:8000/docs"
+      health: "http://localhost:8000/health"
+
+  part_2_required_file_tree:
+    files:
+      - ".env.example"
+      - "README.md"
+      - "docker-compose.yml"
+      - "Dockerfile.api"
+      - "Dockerfile.ui"
+      - "requirements-api.txt"
+      - "requirements-ui.txt"
+      - "streamlit_app.py"
+      - "streamlit_app_v2.py"
+      - "workflow.mmd"
+      - "GetBrevoAndZoomAPI.md"
+      - "api/__init__.py"
+      - "api/main.py"
+      - "api/bedrock_client.py"
+      - "api/nextflow/__init__.py"
+      - "api/nextflow/models.py"
+      - "api/nextflow/scoring.py"
+      - "api/nextflow/providers.py"
+      - "api/nextflow/agent_runner.py"
+      - "api/nextflow/router.py"
+      - "integrations/__init__.py"
+      - "integrations/zoom_provider.py"
+      - "integrations/email_provider_service.py"
+
+    generated_pdf_assets:
+      directories:
+        - "generated_pdfs/job_description"
+        - "generated_pdfs/resumes"
+      expected_files:
+        - "generated_pdfs/job_description/job_description.pdf"
+        - "generated_pdfs/resumes/job_description.pdf"
+        - "generated_pdfs/resumes/CAND-101_aarav_kapoor.pdf"
+        - "generated_pdfs/resumes/CAND-102_neha_mehta.pdf"
+        - "generated_pdfs/resumes/CAND-103_rohan_iyer.pdf"
+        - "generated_pdfs/resumes/MLOPS-Resume-1.pdf"
+      instruction: >
+        Treat generated_pdfs as provided sample input assets. Do not require the app
+        to generate them. The UI should allow uploading these PDFs manually.
+
+  part_3_docker_requirements:
+    docker_compose:
+      services:
+        api:
+          build_context: "."
+          dockerfile: "Dockerfile.api"
+          container_name: "simple-hr-api"
+          port_mapping: "${API_PORT:-8000}:8000"
+          env_file: "../.env"
+          environment:
+            AWS_SDK_LOAD_CONFIG: "1"
+            AWS_REGION: "${AWS_REGION:-us-east-1}"
+            AWS_DEFAULT_REGION: "${AWS_REGION:-us-east-1}"
+          volume: "${HOME}/.aws:/root/.aws:ro"
+        ui:
+          build_context: "."
+          dockerfile: "Dockerfile.ui"
+          container_name: "simple-hr-ui"
+          port_mapping: "${UI_PORT:-8501}:8501"
+          env_file: "../.env"
+          environment:
+            BACKEND_URL: "http://api:8000"
+          depends_on:
+            - "api"
+
+    api_dockerfile:
+      base_image: "python:3.11-slim"
+      workdir: "/app"
+      install: "pip install --no-cache-dir uv && uv pip install --system -r requirements-api.txt"
+      copy:
+        - "api ./api"
+        - "integrations ./integrations"
+      expose: 8000
+      cmd: "uvicorn api.main:app --host 0.0.0.0 --port 8000"
+
+    ui_dockerfile:
+      base_image: "python:3.11-slim"
+      workdir: "/app"
+      install: "pip install --no-cache-dir uv && uv pip install --system -r requirements-ui.txt"
+      copy_main_ui: "streamlit_app_v2.py"
+      expose: 8501
+      cmd: "streamlit run streamlit_app_v2.py --server.address=0.0.0.0 --server.port=8501"
+
+  part_4_dependencies:
+    requirements_api:
+      - "fastapi==0.116.1"
+      - "uvicorn[standard]==0.35.0"
+      - "boto3==1.39.14"
+      - "pydantic==2.11.7"
+      - "python-multipart==0.0.20"
+      - "pypdf==5.9.0"
+      - "requests==2.32.4"
+      - "langchain-groq==0.3.8"
+      - "langsmith==0.4.21"
+    requirements_ui:
+      - "streamlit==1.48.1"
+      - "requests==2.32.4"
+
+  part_5_environment_variables:
+    required:
+      - "AWS_REGION=us-east-1"
+      - "AWS_PROFILE=default"
+      - "AWS_ACCESS_KEY_ID=your-access-key"
+      - "AWS_SECRET_ACCESS_KEY=your-secret-key"
+      - "AWS_SESSION_TOKEN="
+      - "BEDROCK_MODEL_ID=amazon.nova-micro-v1:0"
+      - "GROQ_API_KEY="
+      - "GROQ_MODEL=llama-3.3-70b-versatile"
+    optional:
+      - "LANGSMITH_API_KEY="
+      - "LANGCHAIN_TRACING_V2=false"
+      - "LANGCHAIN_PROJECT=normal-workflow-poc"
+      - "BREVO_API_KEY="
+      - "BREVO_SENDER_EMAIL=noreply@example.com"
+      - "BREVO_SENDER_NAME=HR Team"
+      - "ACCOUNT_ID="
+      - "CLIENT_ID="
+      - "CLIENT_SECRET="
+      - "API_PORT=8000"
+      - "UI_PORT=8501"
+
+  part_6_backend_api_design:
+    api_main_py:
+      framework: "FastAPI"
+      title: "Simple HR PDF Parser"
+      version: "1.0.0"
+      cors: "allow all origins, headers, and methods"
+      include_router: "api.nextflow.router"
+      in_memory_jobs: true
+
+      endpoints:
+        - method: "GET"
+          path: "/health"
+          response: {"status": "ok"}
+
+        - method: "POST"
+          path: "/v1/jobs"
+          request:
+            jd_pdf: "single PDF upload"
+            resumes: "multiple PDF uploads"
+          validation:
+            - "jd_pdf must end with .pdf"
+            - "at least one resume is required"
+            - "all resumes must end with .pdf"
+          behavior:
+            - "create UUID job_id"
+            - "store running JobState in memory"
+            - "read uploaded bytes"
+            - "start async background task run_job"
+          response:
+            job_id: "uuid string"
+            status: "running"
+
+        - method: "GET"
+          path: "/v1/jobs/{job_id}/status"
+          response:
+            job_id: "string"
+            status: "running|completed|failed"
+            logs: "last 20 log lines"
+            error: "nullable string"
+
+        - method: "GET"
+          path: "/v1/jobs/{job_id}/result"
+          response:
+            job_id: "string"
+            status: "running|completed|failed"
+            result: "nullable object"
+            error: "nullable string"
+
+      pdf_extraction:
+        library: "pypdf.PdfReader"
+        behavior: "extract text from every page and join with newline"
+
+      bedrock_extraction:
+        jd_schema:
+          job_id: "JOB-001"
+          title: ""
+          required_skills: []
+          min_experience: 0
+          max_budget: 0
+          location: ""
+          match_thresholds:
+            shortlist_min_percent: 80
+            reject_max_percent: 50
+
+        resume_schema:
+          candidate_id: ""
+          name: ""
+          email: ""
+          skills: []
+          experience_years: 0
+          salary_expectation: 0
+          work_authorized: true
+
+      resume_skill_normalization:
+        behavior:
+          - "accept only list input"
+          - "remove empty values"
+          - "remove category headings"
+          - "split comma, pipe, and semicolon grouped skills"
+          - "split slash pairs such as Git/GitHub"
+          - "remove parenthetical descriptors"
+          - "lowercase skills"
+          - "deduplicate while preserving order"
+
+      final_parse_result_shape:
+        job_spec: "parsed JD JSON"
+        candidates_input: "list of parsed and normalized resume JSON objects"
+
+  part_7_bedrock_client:
+    file: "api/bedrock_client.py"
+    class: "BedrockJsonClient"
+    model_default: "amazon.nova-micro-v1:0"
+    region_default: "us-east-1"
+    behavior:
+      - "use boto3.client('bedrock-runtime')"
+      - "call client.converse with temperature 0 and maxTokens 2048"
+      - "support system prompt and user prompt"
+      - "return text from output.message.content"
+      - "parse strict JSON"
+      - "if direct json.loads fails, parse fenced ```json blocks"
+      - "if fenced parse fails, parse from first { to last }"
+      - "raise ValueError if no valid JSON is found"
+
+  part_8_nextflow_models:
+    file: "api/nextflow/models.py"
+    pydantic_models:
+      WorkflowInput:
+        data: "dict[str, Any]"
+        slot_start_ist: "str"
+        slot_end_ist: "str"
+      OneShotResponse:
+        summary: "dict[str, Any]"
+        selected: "list[dict[str, Any]]"
+        rejected: "list[dict[str, Any]]"
+        email_results: "list[dict[str, Any]]"
+      HitlStartResponse:
+        run_id: "str"
+        shortlisted: "list[dict[str, Any]]"
+        rejected: "list[dict[str, Any]]"
+        manual_review: "list[dict[str, Any]]"
+      HitlDecisionRequest:
+        run_id: "str"
+        candidate_id: "str"
+        decision: "Literal['approve','reject']"
+      HitlFinalizeRequest:
+        run_id: "str"
+
+  part_9_scoring_logic:
+    file: "api/nextflow/scoring.py"
+    skill_aliases:
+      "amazon sagemaker": "sagemaker"
+      "aws sagemaker": "sagemaker"
+      "amazon bedrock": "bedrock"
+      "aws bedrock": "bedrock"
+      "aws lambda": "lambda"
+      "amazon lambda": "lambda"
+      "amazon s3": "s3"
+      "aws s3": "s3"
+      "retrieval-augmented generation": "rag"
+      "retrieval augmented generation": "rag"
+
+    functions:
+      - "_normalize_skill(skill)"
+      - "_skills_match(required, candidate)"
+      - "calc_match_percent(job_spec, candidate)"
+      - "thresholds(job_spec)"
+      - "classify(job_spec, candidate)"
+      - "prepare_scored_lists(data)"
+
+    classification_rules:
+      selected: "match_percent >= shortlist_min_percent"
+      rejected: "match_percent <= reject_max_percent"
+      manual_review: "otherwise"
+
+  part_10_nextflow_router:
+    file: "api/nextflow/router.py"
+    prefix: "/v1/next"
+    tags:
+      - "next-workflow"
+    in_memory_hitl_runs: true
+
+    endpoints:
+      - method: "POST"
+        path: "/oneshot"
+        behavior:
+          - "score candidates"
+          - "auto-select shortlisted"
+          - "auto-select manual-review candidates"
+          - "reject rejected candidates"
+          - "call run_agent_actions in a worker thread"
+          - "return summary, selected, rejected, email_results"
+
+      - method: "POST"
+        path: "/hitl/start"
+        behavior:
+          - "score candidates"
+          - "create UUID run_id"
+          - "store job_spec, slot window, shortlisted, rejected, manual_review, decisions"
+          - "return run_id and candidate buckets"
+
+      - method: "POST"
+        path: "/hitl/decision"
+        behavior:
+          - "lookup run_id"
+          - "save approve/reject by candidate_id"
+          - "return saved true and decisions map"
+
+      - method: "POST"
+        path: "/hitl/finalize"
+        behavior:
+          - "shortlisted become selected"
+          - "rejected remain rejected"
+          - "manual candidates become selected only if decision is approve"
+          - "default missing manual decision to reject"
+          - "call run_agent_actions"
+          - "return summary, selected, rejected, email_results"
+
+  part_11_agent_runner:
+    file: "api/nextflow/agent_runner.py"
+    llm:
+      provider: "Groq via langchain_groq.ChatGroq"
+      default_model: "llama-3.3-70b-versatile"
+      temperature: 0
+      missing_key_behavior: "raise RuntimeError('GROQ_API_KEY is missing.')"
+
+    langsmith:
+      behavior:
+        - "if LANGSMITH_API_KEY exists, set LANGCHAIN_TRACING_V2=true"
+        - "set LANGCHAIN_PROJECT=normal-workflow-poc by default"
+        - "otherwise set LANGCHAIN_TRACING_V2=false"
+
+    tools:
+      - name: "create_zoom_meeting"
+        behavior: "call zoom_create_with_provider(candidate_name, slot_start_ist, slot_end_ist)"
+      - name: "send_candidate_email"
+        behavior: "call verified_send_for_candidate(candidate, slot_start_ist, slot_end_ist, job_spec)"
+
+    workflow:
+      - "selected candidates get allocated 30-minute interview slots inside the supplied IST window"
+      - "slot date is the next day in Asia/Kolkata, not today's date"
+      - "raise error if selected candidates do not fit in the slot window"
+      - "for each candidate, bind tools to ChatGroq"
+      - "prompt agent to always call send_candidate_email exactly once"
+      - "prompt agent to call create_zoom_meeting first only when selected"
+      - "loop up to 4 tool-call iterations"
+      - "raise RuntimeError if send_candidate_email was not called"
+      - "collect verified send payload plus agent_output"
+
+  part_12_providers_and_integrations:
+    providers_py:
+      file: "api/nextflow/providers.py"
+      selected_candidate:
+      - "create Zoom meeting for the next calendar day in Asia/Kolkata"
+      - "email subject: Interview Invitation - {title}"
+      - "include job title, job id, next-day IST date/time, Zoom link, and HR Team signature"
+      rejected_candidate:
+        - "email subject: Application Update - {title}"
+        - "include polite rejection message"
+        - "use special reason line for manual-threshold candidates"
+      imports:
+        - "send_email_dynamic from integrations.email_provider_service"
+        - "get_zoom_token_dynamic and create_zoom_meeting_dynamic from integrations.zoom_provider"
+
+    zoom_provider:
+      file: "integrations/zoom_provider.py"
+      functions:
+        get_zoom_token_dynamic:
+          env_vars:
+            - "ACCOUNT_ID"
+            - "CLIENT_ID"
+            - "CLIENT_SECRET"
+          behavior:
+            - "return None if any credential is missing"
+            - "POST to https://zoom.us/oauth/token?grant_type=account_credentials&account_id=..."
+            - "use Basic auth with base64 CLIENT_ID:CLIENT_SECRET"
+            - "return access_token"
+        create_zoom_meeting_dynamic:
+          behavior:
+            - "POST to https://api.zoom.us/v2/users/me/meetings"
+            - "use Bearer token"
+            - "payload includes topic, type 2, start_time, duration, timezone"
+            - "return response JSON"
+
+    email_provider:
+      file: "integrations/email_provider_service.py"
+      function: "send_email_dynamic(to_email, subject, body)"
+      behavior:
+        - "if BREVO_API_KEY missing, return dry_run response"
+        - "default sender email shobhansingh431@gmail.com"
+        - "default sender name HR Team"
+        - "POST to https://api.brevo.com/v3/smtp/email"
+        - "send both htmlContent and textContent"
+        - "return sent true for 2xx"
+        - "return structured failure for non-2xx or exception"
+
+  part_13_streamlit_ui_v2:
+    main_ui_file: "streamlit_app_v2.py"
+    page_config:
+      page_title: "Agentic HR Workflow v2"
+      layout: "wide"
+
+    visual_style:
+      - "dark gradient background"
+      - "Space Grotesk font and IBM Plex Mono for technical rows"
+      - "custom CSS injected with st.markdown"
+      - "checkpoint bars with numbered active steps, green done state, red failed state"
+      - "agent runtime panel with pulse indicators"
+      - "chips for candidates, skills, role, location, email summary"
+      - "card-like sections using CSS class v2-card"
+
+    header:
+      title: "Agentic HR Workflow v2"
+      subtitle: "Pipeline checkpoints + higher-clarity operations UI. Backend APIs unchanged."
+
+    global_controls:
+      - "FastAPI URL text input, default from BACKEND_URL or http://localhost:8000"
+
+    tabs:
+      - "1) PDF -> JSON (v2)"
+      - "2) Next Workflow (v2)"
+
+    tab_1_pdf_to_json:
+      checkpoint_steps:
+        - "Upload"
+        - "Submitted"
+        - "Parsing"
+        - "Result Ready"
+      layout:
+        - "two columns: left upload area, right live status/agent panel"
+      upload_controls:
+        - "Job Description PDF uploader"
+        - "Resume PDFs multi-file uploader"
+        - "render uploaded file list"
+      buttons:
+        - "Run Parse Pipeline"
+        - "Reset Parse State"
+      behavior:
+        - "POST PDFs to /v1/jobs"
+        - "poll /v1/jobs/{job_id}/status up to 600 seconds"
+        - "fetch /v1/jobs/{job_id}/result"
+        - "store parsed JSON in session_state v2_parsed_json"
+        - "show success/error state"
+        - "show summary chips when result exists"
+        - "provide Download Parsed JSON button named combined_output_v2.json"
+        - "show parsed JSON inside collapsed expander"
+
+    tab_2_next_workflow:
+      checkpoint_steps:
+        - "Input Ready"
+        - "Submitted"
+        - "Decisioning"
+        - "Email Dispatch"
+        - "Completed"
+      controls:
+        - "Input JSON text_area populated from v2_parsed_json"
+        - "IST slot start text input default 14:00"
+        - "IST slot end text input default 18:00"
+        - "horizontal radio Mode: One-Shot or HITL"
+      one_shot_behavior:
+        - "POST to /v1/next/oneshot"
+        - "show visual progress using ThreadPoolExecutor while request runs"
+        - "show email summary chips"
+        - "show metrics Selected, Rejected, Manual Auto Approved"
+        - "show Result JSON in collapsed expander"
+      hitl_behavior:
+        - "Start HITL Run posts to /v1/next/hitl/start"
+        - "store run_id, manual candidates, status payload"
+        - "show current run_id"
+        - "for each manual candidate show name, candidate_id, match percent"
+        - "decision selectbox approve/reject"
+        - "Save decision button posts to /v1/next/hitl/decision"
+        - "Finalize HITL Workflow posts to /v1/next/hitl/finalize"
+        - "show metrics Selected, Rejected, Manual Reviewed"
+        - "show Result JSON in collapsed expander"
+
+  part_14_streamlit_ui_v1:
+    file: "streamlit_app.py"
+    purpose: "simpler fallback UI"
+    requirements:
+      - "same two tabs: PDF -> JSON and Next Workflow"
+      - "basic upload, polling, download JSON"
+      - "One-Shot and HITL support"
+      - "use BACKEND_URL or localhost default"
+      - "do not make this the Docker default; Docker should run streamlit_app_v2.py"
+
+  part_15_readme_and_docs:
+    readme:
+      describe:
+        - "two-stage student-friendly POC"
+        - "PDF -> JSON"
+        - "Next Workflow"
+        - "One-Shot mode"
+        - "HITL mode"
+        - "low match candidates get rejection email"
+        - "selected candidates get interview flow"
+        - "Groq + tool-calling agent"
+        - "LangSmith tracing support"
+        - "Docker run instructions"
+        - "required env vars"
+        - "key endpoints"
+    workflow_mmd:
+      type: "Mermaid graph"
+      include_nodes:
+        - "Streamlit UI"
+        - "POST /v1/jobs"
+        - "FastAPI main.py"
+        - "PDF text extraction"
+        - "Bedrock JSON extraction"
+        - "Next workflow router"
+        - "prepare scored lists"
+        - "OneShot/HITL"
+        - "run_agent_actions"
+        - "ChatGroq"
+        - "Zoom provider"
+        - "Brevo email provider"
+
+    brevo_zoom_doc:
+      file: "GetBrevoAndZoomAPI.md"
+      include:
+        - "Zoom Server-to-Server OAuth setup"
+        - "Account ID, Client ID, Client Secret"
+        - "required meeting scopes"
+        - "token curl example"
+        - "meeting creation example"
+        - "Brevo API key URL"
+
+  part_16_what_not_to_do:
+    rules:
+      - "Do not remove Docker support."
+      - "Do not rename API endpoints."
+      - "Do not rename required request or response fields."
+      - "Do not replace Streamlit with another frontend framework."
+      - "Do not replace FastAPI with Flask or another backend framework."
+      - "Do not remove generated_pdfs directories or sample PDF expectations."
+      - "Do not hardcode secrets."
+      - "Do not require real Brevo credentials for dry-run behavior."
+      - "Do not silently fake Groq if GROQ_API_KEY is missing; raise a clear error."
+      - "Do not bypass AWS Bedrock for the PDF extraction step."
+      - "Do not remove HITL mode."
+      - "Do not remove One-Shot mode."
+      - "Do not remove LangSmith environment handling."
+      - "Do not create Zoom meetings for rejected candidates."
+      - "Do not send more than one candidate email tool call per candidate."
+      - "Do not change the JSON output shape: keep job_spec and candidates_input."
+      - "Do not add unnecessary databases; use in-memory job and HITL state."
+      - "Do not add authentication."
+      - "Do not over-engineer the POC with queues, Redis, Celery, or Kubernetes."
+      - "Do not make the UI a marketing landing page; first screen must be the working app."
+
+  part_17_acceptance_criteria:
+    must_pass:
+      - "Project builds with docker compose up --build."
+      - "UI opens on localhost:8501."
+      - "API docs open on localhost:8000/docs."
+      - "GET /health returns {'status':'ok'}."
+      - "PDF upload endpoint accepts one JD PDF and multiple resume PDFs."
+      - "PDF parsing result has job_spec and candidates_input."
+      - "Next workflow One-Shot endpoint returns summary, selected, rejected, email_results."
+      - "HITL start returns run_id and manual_review."
+      - "HITL decision saves approve/reject."
+      - "HITL finalize returns final selected/rejected/email_results."
+      - "Missing BREVO_API_KEY produces dry-run email status instead of crashing."
+      - "Missing Zoom credentials causes selected-candidate Zoom creation to fail clearly."
+      - "Missing GROQ_API_KEY causes next workflow to fail clearly."
+      - "The Docker UI uses streamlit_app_v2.py."
+
+  final_instruction_to_codex: >
+    Implement the files exactly according to this specification. Keep the project
+    minimal, student-friendly, and runnable. After implementation, run
+    `docker compose up --build` or at least validate Dockerfiles and imports.
+    Report any missing external credentials separately from code issues.
