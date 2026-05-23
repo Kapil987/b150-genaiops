@@ -136,6 +136,10 @@ This validates the RAG flow locally before deploying to AgentCore.
 ### 002: AgentCore Runtime RAG Agent
 
 Configure the runtime:
+```bash
+uv sync
+activate the environment
+```
 
 ```bash
 export AWS_DEFAULT_REGION=us-east-1

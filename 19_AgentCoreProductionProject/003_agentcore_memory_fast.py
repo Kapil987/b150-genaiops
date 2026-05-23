@@ -148,7 +148,7 @@ class MemoryMiddleware(AgentMiddleware):
         thread_id = config["configurable"]["thread_id"]
         
         # Namespace for this specific session
-        namespace = (actor_id, thread_id)
+        namespace = (actor_id, thread_id) # actionid: john , thread id -- 123
         messages = state.get("messages", [])
         
         # Save the last human message to long-term memory
