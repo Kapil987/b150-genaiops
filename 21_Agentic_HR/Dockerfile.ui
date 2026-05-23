@@ -1,0 +1,16 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+COPY requirements-ui.txt .
+RUN pip install --no-cache-dir uv && uv pip install --system -r requirements-ui.txt
+# RUN pip install --no-cache-dir -r requirements-ui.txt
+
+# Add this line right before your COPY
+ARG CACHE_BUST=1
+
+# COPY streamlit_app.py .
+COPY streamlit_app_v2.py .
+
+EXPOSE 8501
+# CMD ["streamlit", "run", "streamlit_app.py", "--server.address=0.0.0.0", "--server.port=8501"]
+CMD ["streamlit", "run", "streamlit_app_v2.py", "--server.address=0.0.0.0", "--server.port=8501"]

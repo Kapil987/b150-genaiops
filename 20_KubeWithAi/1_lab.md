@@ -80,5 +80,5 @@ kind delete cluster --name clusterNAME
 ```
 ### Prompts
 - can you fix my nginx pod and then show me kubectl get po status
-- can you push a temporary file in bucket MYBUCKETNAME to check connectivity
+- can you push a temporary file in bucket bedrock-agentcore-codebuild-sources-299029453147-us-east-1  to check connectivity
 - show me the status for all of my instances in us-east-1 region in table properly formated for linux terminal
